@@ -73,7 +73,7 @@ function useFirebaseAuth() {
             password
         );
         setAuthUser(user);
-        Router.push("/settings");
+        Router.push("/dashboard");
     };
 
     const signout = async () => {

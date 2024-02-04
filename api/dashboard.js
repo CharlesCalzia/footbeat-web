@@ -1,9 +1,9 @@
 import {
   PlusSmallIcon,
 } from '@heroicons/react/20/solid'
-import { useAuth } from '../src/auth'
+import { useAuth } from '../../src/auth'
 import React, { useEffect, useState, Fragment } from "react";
-import { db } from "../src/firebase";
+import { db } from "../../src/firebase";
 import { doc, getDocs, collection, query, where } from "firebase/firestore";
 import Router from "next/router";
 
@@ -65,77 +65,74 @@ export default function Dashboard() {
         return []; // Return empty array if no userID
       }
     }
+
+    async function getDailyData(userID="720ae007-d2bc-4a24-99f7-792748e82c5b") {
+      if (userID) {
+        const options = {
+            method: 'GET',
+            headers: {
+              accept: 'application/json',
+              'dev-id': 'thequackedcoders-prod-B5fwGbPPOx',
+              'x-api-key': 'TbzvP8x0VPHIubRqneHhxeM0qlHcKT23'
+            }
+          };
+  
+        try {
+          const response = await fetch(
+            "https://api.tryterra.co/v2/daily?user_id=" +
+              process.env.NEXT_PUBLIC_USER_ID +
+              "&start_date=2024-01-28&end_date=2024-02-04&to_webhook=false&with_samples=false",
+            options
+          );
+          const data = await response.json();
+          return data.data; // Return the actual workout data
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          return []; // Return empty array for error handling
+        }
+      } else {
+        return []; // Return empty array if no userID
+      }
+    }
   
     async function fetchDailyData() {
-      try {
-        // Check if user is not signed in
-        if (!user) {
-          Router.push("/signin");
-          return []; // Return empty array if user is not signed in
-        }
-        
-        // Make the API request
-        const response = await fetch("/api/data")
-
-        return response.clone()
-
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        return []; // Return empty array for error handling
+      if (!user) {
+        Router.push("/signin");
+        return []; // Return empty array if user is not signed in
       }
+  
+      const userID = await getUserID();
+      return getDailyData(userID);
     }
   
     function DailySection() {
       const stats = [
-        { name: 'Calories burnt', type: 'cals', change: '+0.00%', changeType: 'positive' },
-        { name: 'Distance', type: 'dist', change: '+0.00%', changeType: 'positive' },
-        { name: 'Steps', type: 'steps', change: '+0.00%', changeType: 'positive' },
-        { name: 'Active minutes', type: 'mins', change: '+0.00%', changeType: 'positive' },
+        { name: 'Calories burnt', change: '+0.00%', changeType: 'positive' },
+        { name: 'Steps', change: '0.00%', changeType: 'positive' },
+        { name: 'Hrs of sleep', change: '0.00%', changeType: 'positive' },
+        { name: 'Active minutes', change: '0.00%', changeType: 'positive' },
       ]
-      const t = ['cals', 'dist', 'steps', 'mins']
-      const [daily, setDaily] = useState([1202,3.08,4252,0]);
+      const [daily, setDaily] = useState([]);
   
       useEffect(() => {
         const fetchDaily = async () => {
           try {
             const data = await fetchDailyData();
-            const jdata = await data.text();
-            try{              
-              
-            } catch (error) {
-              console.error("Error fetching data p1:", error);
-            }
+            console.log("Daily data...")
+            console.log(data)
+            setDaily(data);
           } catch (error) {
-            console.error("Error fetching data p2:", error);
+            console.error("Error fetching data:", error);
+            setDaily([]);
           }
-        };  
+        };
+  
         fetchDaily();
       }, []);      
   
       return (
         <>
-          {stats.map((stat, statIdx) => (
-                <div
-                  key={stat.name}
-                  className={classNames(
-                    statIdx % 2 === 1 ? 'sm:border-l' : statIdx === 2 ? 'lg:border-l' : '',
-                    'flex items-baseline flex-wrap justify-between gap-y-2 gap-x-4 border-t border-gray-900/5 px-4 py-10 sm:px-6 lg:border-t-0 xl:px-8'
-                  )}
-                >
-                  <dt className="text-sm font-medium leading-6 text-gray-500">{stat.name}</dt>
-                  <dd
-                    className={classNames(
-                      stat.changeType === 'negative' ? 'text-rose-600' : 'text-gray-700',
-                      'text-xs font-medium'
-                    )}
-                  >
-                    {stat.change}
-                  </dd>
-                  <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
-                    {daily[t.indexOf(stat.type)]}
-                  </dd>
-                </div>
-              ))}
+          
         </>
       );
     }
@@ -183,8 +180,8 @@ export default function Dashboard() {
               <tr className="text-sm leading-6 text-gray-900">
                 <th scope="colgroup" colSpan={3} className="relative isolate py-2 font-semibold">
                   <time dateTime={day.dateTime}>{day.date}</time>
-                  <div className="absolute inset-y-0 right-full -z-10 w-screen border-b border-gray-200 bg-gray-50" />
-                  <div className="absolute inset-y-0 left-0 -z-10 w-screen border-b border-gray-200 bg-gray-50" />
+                  <div className="absolute inset-y-0 right-full -z-10 w-screen border-b border-gray-200 bg-gray-50">Calories</>
+                  <div className="absolute inset-y-0 left-0 -z-10 w-screen border-b border-gray-200 bg-gray-50">
                 </th>
               </tr>
               { day.workouts == null ? null : (day.workouts.map((workout, index) => (
@@ -283,13 +280,6 @@ export default function Dashboard() {
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
                   <table className="w-full text-left">
-                    <thead className="sr-only">
-                      <tr>
-                        <th>Calories</th>
-                        <th className="hidden sm:table-cell">Type</th>
-                        <th>More details</th>
-                      </tr>
-                    </thead>
                     <tbody>
                       <Activities />
                     </tbody>

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import Router from "next/router";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import SignIn from "../components/auth/SignIn";
-import SignUp from "../components/auth/SignUp";
-import ForgotPassword from "../components/auth/ForgotPassword";
-import { useAuth } from "../src/auth";
+import SignIn from "../../components/auth/SignIn";
+import SignUp from "../../components/auth/SignUp";
+import ForgotPassword from "../../components/auth/ForgotPassword";
+import { useAuth } from "../../src/auth";
 
 export default function Signin() {
     const { user } = useAuth();
