@@ -6,7 +6,7 @@ import TextField from "@mui/material/TextField";
 import { getDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../src/firebase";
 import Alert from "@mui/material/Alert";
-import LinkWatch from "./LinkWatch";
+import LinkWatch from "./Linkwatch";
 
 export default function General() {
     const { user } = useAuth();
