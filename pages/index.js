@@ -10,7 +10,7 @@ export default function Component() {
                             <span>Improve your running with </span> <br/> <span className="text-primary">FootBeat</span>
                         </h1>
                         <p className="px-0 mb-8 text-lg text-gray-600 md:text-xl lg:px-24">
-                            Sync your music with your running. Then we'll analyse your run with AI and give you feedback.
+                            Sync your music with your running. Then we will analyse your run with AI and give you feedback.
                         </p>
                         
                     </div>

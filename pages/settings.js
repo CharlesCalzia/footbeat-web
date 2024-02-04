@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import General from "../components/settings/General";
-import Interests from "../components/settings/Interests";
 import { useAuth } from "../src/auth";
 import Router from "next/router";
 
